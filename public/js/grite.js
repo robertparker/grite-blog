@@ -49,6 +49,47 @@ function loadPosts() {
   }
 }
 
+function loadLink(gist_id) {
+  $.get('https://api.github.com/gists/' + gist_id, function (data) {
+    var gist = '';
+    for (var j in data.files)
+      gist = gist + marked.parse(data.files[j].content);
+      title = data.files[j].filename;
+      updated_at = new Date(data.updated_at);
+    var dom = '<div class="post">' + title + ' •  <span class="author">last changed at </span>' +
+              '<span class="date"><a href="' + data.html_url + '">' + updated_at.toDateString() + '</a></span>' +
+              ' • <span class="author">posted by <a href="https://github.com/' + data.user.login + '">' + data.user.login + '</a></span>' +
+              '</div>';
+    $(dom).appendTo('#post' + data.id);
+    }, 'json').done(function() {
+  });
+}
+
+function loadAllLinks() {
+  $('#loader').show();
+  for (;loaded < toBeLoaded; loaded++) {
+    queue ++;
+    $.get('https://api.github.com/gists/' + config.posts[loaded], function (data) {
+      // var gist = '';
+      // for (var j in data.files)
+      //   gist = gist + marked.parse(data.files[j].content);
+      //   title = data.files[j].filename;
+      //   updated_at = new Date(data.updated_at);
+      // var dom = '<div class="post">' + title + ' •  ' +
+      //           '<span class="date"><a href="' + data.html_url + '">' + updated_at.toDateString() + '</a></span>' +
+      //           ' • <span class="author">Posted by <a href="https://github.com/' + data.user.login + '">' + data.user.login + '</a></span>' +
+      //           '</div>';
+      // $(dom).appendTo('#post' + data.id);
+      gist_id = data.id
+      loadLink(gist_id);
+    }, 'json').done(function() {
+      queue --;
+      if (queue == 0)
+        $('#loader').hide();
+    });
+  }
+}
+
 function loadFooter() {
   $('#footer-text').html(config.footerText);
 }
@@ -66,6 +107,6 @@ setNavbar();
 loadFooter();
 $('#old-posts').bind('click', loadOlder);
 createPlaceholders();
-loadPosts();
+loadAllLinks();
 if (toBeLoaded == config.posts.length)
   $('#old-posts').hide();

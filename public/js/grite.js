@@ -56,9 +56,9 @@ function loadLink(gist_id) {
       gist = gist + marked.parse(data.files[j].content);
       title = data.files[j].filename;
       updated_at = new Date(data.updated_at);
-    var dom = '<div class="post">' + title + ' •  <span class="author">last changed at </span>' +
+    var dom = '<div class="post">' + '<a href="' + data.html_url + '">' + title + '</a>' + ' •  <span class="author">last changed at </span>' +
               '<span class="date"><a href="' + data.html_url + '">' + updated_at.toDateString() + '</a></span>' +
-              ' • <span class="author">posted by <a href="https://github.com/' + data.user.login + '">' + data.user.login + '</a></span>' +
+              // ' • <span class="author">posted by <a href="https://github.com/' + data.user.login + '">' + data.user.login + '</a></span>' +
               '</div>';
     $(dom).appendTo('#post' + data.id);
     }, 'json').done(function() {

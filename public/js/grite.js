@@ -53,6 +53,7 @@ function loadLink(gist_id) {
   $.get('https://api.github.com/gists/' + gist_id, function (data) {
     var gist = '';
     for (var j in data.files)
+      console.log('this one has files');
       gist = gist + marked.parse(data.files[j].content);
       title = data.files[j].filename;
       updated_at = new Date(data.updated_at);
@@ -60,7 +61,9 @@ function loadLink(gist_id) {
               '<span class="author">' + updated_at.getMonth() + '.' + updated_at.getDate() + '.' + updated_at.getFullYear() + '</span>' +
               // ' • <span class="author">posted by <a href="https://github.com/' + data.user.login + '">' + data.user.login + '</a></span>' +
               '</div>';
-    $(dom).appendTo('#post' + data.id);
+    console.log(dom);
+    // $(dom).appendTo('#post' + data.id);
+    $(dom).appendTo('#posts');
     }, 'json').done(function() {
   });
 }
@@ -80,8 +83,16 @@ function loadAllLinks() {
       //           ' • <span class="author">Posted by <a href="https://github.com/' + data.user.login + '">' + data.user.login + '</a></span>' +
       //           '</div>';
       // $(dom).appendTo('#post' + data.id);
-      gist_id = data.id
+      gist_id = data.id;
       loadLink(gist_id);
+      forks = data.forks;
+      console.log(forks.length);
+      for(var i in forks) {
+        console.log('this fork id is  ' +forks[i].id);
+        thisId = forks[i].id;
+        loadLink(thisId);
+        console.log('thisId is ');
+      }
     }, 'json').done(function() {
       queue --;
       if (queue == 0)

@@ -1,5 +1,6 @@
 body {
   text-align: center;
+  margin: 0 auto;
 }
 
 .container {
@@ -27,6 +28,13 @@ body {
   color: #666;
   font-size: 14px;
   text-align: left;
+}
+
+.fork-post {
+  padding-top: 10px;
+  padding-left: 15px;
+  text-align: left;
+  font-size: 13px;
 }
 
 #loader{

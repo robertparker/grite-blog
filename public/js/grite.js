@@ -49,24 +49,34 @@ function loadPosts() {
   }
 }
 
-function loadLink(gist_id) {
+function loadLink(gist_id, parent_id) {
+  parent_id = (typeof parent_id === 'undefined') ? gist_id : parent_id;
   $.get('https://api.github.com/gists/' + gist_id, function (data) {
     var gist = '';
+    var postClass = (parent_id === gist_id) ? 'post' : 'fork-post'
     for (var j in data.files)
       console.log('this one has files');
       gist = gist + marked.parse(data.files[j].content);
       title = data.files[j].filename;
       updated_at = new Date(data.updated_at);
-    var dom = '<div class="post">' + '<a href="' + data.html_url + '">' + title + '</a>' + ' •  <span class="author">last edited </span>' +
+    var dom = '<div class="' + postClass + '">' + '<a href="' + data.html_url + '">' + titleizeMarkdown(title) + '</a>' + ' •  <span class="author"></span>' +
               '<span class="author">' + (updated_at.getMonth()+1) + '.' + (updated_at.getDate()+1) + '.' + updated_at.getFullYear() + '</span>' +
               // ' • <span class="author">posted by <a href="https://github.com/' + data.user.login + '">' + data.user.login + '</a></span>' +
               '</div>';
     console.log(dom);
-    // $(dom).appendTo('#post' + data.id);
-    $(dom).appendTo('#posts');
+    (parent_id === gist_id) ? $(dom).prependTo('#post' + parent_id) : $(dom).appendTo('#post' + parent_id);
+    // $(dom).appendTo('#posts');
     }, 'json').done(function() {
   });
 }
+
+  function titleizeMarkdown(title) {
+    return title.replace('.md','').replace(/-/g,' ');
+  }
+
+  function toTitleCase(str) {
+      return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+  }
 
 function loadAllLinks() {
   $('#loader').show();
@@ -90,7 +100,7 @@ function loadAllLinks() {
       for(var i in forks) {
         console.log('this fork id is  ' +forks[i].id);
         thisId = forks[i].id;
-        loadLink(thisId);
+        loadLink(thisId, gist_id);
         console.log('thisId is ');
       }
     }, 'json').done(function() {

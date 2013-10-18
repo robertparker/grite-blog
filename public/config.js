@@ -1,5 +1,5 @@
 var config = {
-  title: 'Rohit Parulkar',
+  title: "Here are some things I've been doing lately.",
   navbar: [  ],
   posts: [ 
            '6477950', //Why I'm Writing With Git
@@ -10,5 +10,11 @@ var config = {
            '6955219' //My Most Important Friend Request
            ],
   atOnce: 100,
-  footerText: ''
+  footerText: '',
+  gitHubUser: 'robertparker',
+  repos: [
+          'grite-blog', 
+          'bitstarter', 
+          'sentencer'
+        ]
 };

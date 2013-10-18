@@ -1,6 +1,19 @@
 body {
+  /*font-family: "HelveticaNeue", "Helvetica Neue", "HelveticaNeueRoman", "HelveticaNeue-Roman", "Helvetica Neue Roman", 'TeXGyreHerosRegular', "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif; font-weight:400; font-stretch:normal;*/
+  font-family: "HelveticaNeue", "Helvetica Neue";
+  font-weight: 300;
   text-align: center;
   margin: 0 auto;
+  background-color: #F8F8F8;
+}
+
+a {
+  color: #FF3300;
+}
+
+a:hover {
+  color: #FF0000;
+  text-decoration: none;
 }
 
 .container {
@@ -10,9 +23,34 @@ body {
 
 #navbar {
   padding-top: 20px;
+  font-size: 18px;
+  font-family: 'Kotta One', serif;
+}
+
+#title {
+  font-family: "HelveticaNeue-Medium", "Helvetica Neue";
+}
+
+.time-length {
+  /*font:#FF3300;; add this in when you can separate by time length.*/
+}
+
+#section-header {
+  font-family: 'Kotta One', serif;
+  text-align: left;
+  font-size: 24px;
+  padding-top: 50px;
+  padding-bottom: 10px;
 }
 
 .post {
+  font-size: 18px;
+  padding-top: 10px;
+ text-align: left; 
+}
+
+.repo {
+    font-size: 18px;
   padding-top: 10px;
   text-align: left;
 }
@@ -20,7 +58,6 @@ body {
 .date {
   color: #666;
   font-style: italic;
-  font-size: 14px;
   text-align: left;
 }
 
@@ -32,9 +69,9 @@ body {
 
 .fork-post {
   padding-top: 10px;
-  padding-left: 15px;
+  padding-left: 30px;
   text-align: left;
-  font-size: 13px;
+  font-size: 18px;
 }
 
 #loader{
@@ -52,5 +89,5 @@ body {
 #footer-grite {
   padding-top: 20px;
   font-size: 12px;
-  padding-bottom: 10px
+  padding-bottom: 10px;
 }

@@ -55,7 +55,6 @@ function loadLink(gist_id, parent_id) {
     var gist = '';
     var postClass = (parent_id === gist_id) ? 'post' : 'fork-post'
     for (var j in data.files)
-      console.log('this one has files');
       gist = gist + marked.parse(data.files[j].content);
       title = data.files[j].filename;
       updated_at = new Date(data.updated_at);
@@ -63,7 +62,6 @@ function loadLink(gist_id, parent_id) {
               '<span class="author">' + (updated_at.getMonth()+1) + '.' + (updated_at.getDate()+1) + '.' + updated_at.getFullYear() + '</span>' +
               // ' • <span class="author">posted by <a href="https://github.com/' + data.user.login + '">' + data.user.login + '</a></span>' +
               '</div>';
-    console.log(dom);
     (parent_id === gist_id) ? $(dom).prependTo('#post' + parent_id) : $(dom).appendTo('#post' + parent_id);
     // $(dom).appendTo('#posts');
     }, 'json').done(function() {
@@ -96,17 +94,28 @@ function loadAllLinks() {
       gist_id = data.id;
       loadLink(gist_id);
       forks = data.forks;
-      console.log(forks.length);
       for(var i in forks) {
-        console.log('this fork id is  ' +forks[i].id);
         thisId = forks[i].id;
         loadLink(thisId, gist_id);
-        console.log('thisId is ');
       }
     }, 'json').done(function() {
       queue --;
       if (queue == 0)
         $('#loader').hide();
+    });
+  }
+}
+
+function getRepos() {
+  for (var p in config.repos) {
+    $.get('https://api.github.com/repos/' + config.gitHubUser + '/' + config.repos[p], function (data) {
+      pushed_at = new Date(data.pushed_at);
+      var dom = '<div class="repo">' + '<a href="' + data.homepage + '">' + data.name + '</a>' + ' •  <span class="author"></span>' +
+              '<span class="author">' + (pushed_at.getMonth()+1) + '.' + (pushed_at.getDate()+1) + '.' + pushed_at.getFullYear() + '</span>' +
+              '</div>';
+              console.log(dom);
+      $(dom).appendTo('#repos');
+    }, 'json').done(function() {
     });
   }
 }
@@ -123,11 +132,12 @@ function loadOlder() {
 }
 
 $('#loader').hide();
-setTitle();
+// setTitle();
 setNavbar();
 loadFooter();
 $('#old-posts').bind('click', loadOlder);
 createPlaceholders();
 loadAllLinks();
+getRepos();
 if (toBeLoaded == config.posts.length)
   $('#old-posts').hide();

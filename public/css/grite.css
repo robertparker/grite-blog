@@ -1,6 +1,4 @@
 body {
-  /*font-family: "HelveticaNeue", "Helvetica Neue", "HelveticaNeueRoman", "HelveticaNeue-Roman", "Helvetica Neue Roman", 'TeXGyreHerosRegular', "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif; font-weight:400; font-stretch:normal;*/
-  font-family: "HelveticaNeue", "Helvetica Neue";
   font-weight: 300;
   text-align: center;
   margin: 0 auto;
@@ -31,8 +29,15 @@ a:hover {
   font-family: "HelveticaNeue-Medium", "Helvetica Neue";
 }
 
-.time-length {
-  /*font:#FF3300;; add this in when you can separate by time length.*/
+#time-length {
+  color: #FF3300;/*; add this in when you can separate by time length.*/
+  background-color:transparent;
+  font-size:48px;
+  font-family:inherit;
+  font-weight:inherit;
+  line-height:inherit;
+  padding:0px;
+  margin: inherit;
 }
 
 #section-header {

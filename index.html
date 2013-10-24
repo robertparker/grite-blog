@@ -17,7 +17,25 @@
   <body>
     <div id="loader">Loading ...</div>
     <div class="container">
-      <h1 id="title">Here are some things I've been doing <span class="time-length">lately.</span></h1>
+      <h1 id="title">Here are some things I've been doing 
+        <div class="btn-group">
+          <button class="btn dropdown-toggle" data-toggle="dropdown" href="#" id="time-length">
+            lately.
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu">
+            <li>
+              <a tabindex="-1" href="#">in the past week.</a>
+            </li>
+            <li>
+              <a role="menuitem" tabindex="-1" href="#">in the past month.</a>
+            </li>
+            <li>
+              <a role="menuitem" tabindex="-1" href="#">in the past year.</a>
+            </li>
+          </ul>
+        </div>
+      </h1>
       <div id="navbar"></div>
       <div id="section-header">what I'm thinking about...</div>
       <!-- <div id="content"></div> -->
@@ -35,5 +53,6 @@
     <script src="public/js/marked.js"></script>
     <script src="public/config.js"></script>
     <script src="public/js/grite.js"></script>
+    <script src="public/js/bootstrap.min.js"></script>
     </body>
 </html>

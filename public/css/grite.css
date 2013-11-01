@@ -1,8 +1,16 @@
+html, 
 body {
   font-weight: 300;
   text-align: center;
   margin: 0 auto;
   background-color: #F8F8F8;
+  padding: 0;
+  height: 100%;
+}
+
+#wrapper {
+  min-height: 100%;
+  position:relative;
 }
 
 a {
@@ -16,7 +24,8 @@ a:hover {
 
 .container {
   width: 80%;
-  padding-top: 60px;
+  padding-top: 20px;
+  padding-bottom: 80px;
 }
 
 #navbar {
@@ -99,8 +108,14 @@ a:hover {
   font-size: 13px;
 }
 
-.footer {
-  padding-top: 20px;
+.footer { 
+  /* keeping that footer at the bottom thanks to: 
+  http://www.cssreset.com/how-to-keep-footer-at-bottom-of-page-with-css/*/
+  width: 100%;
+  height: 60px;
+  position:absolute;
+  bottom: 0;
+  left:0;
 }
 
 #footer-grite {

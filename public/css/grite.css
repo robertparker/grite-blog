@@ -36,8 +36,20 @@ a:hover {
   font-family:inherit;
   font-weight:inherit;
   line-height:inherit;
-  padding:0px;
+  padding-left: 2px;
+  padding-right: 7px;
+  padding-bottom: 5px;
+  padding-top: 2px;
   margin: inherit;
+}
+
+#time-length:active {
+  border: none;
+  box-shadow: none;
+}
+
+.dropdown-menu {
+  padding: inherit;
 }
 
 #section-header {

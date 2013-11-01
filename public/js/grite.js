@@ -27,27 +27,27 @@ function createPlaceholders() {
   }
 }
 
-function loadPosts() {
-  $('#loader').show();
-  for (;loaded < toBeLoaded; loaded++) {
-    queue ++;
-    $.get('https://api.github.com/gists/' + config.posts[loaded], function (data) {
-      var gist = '';
-      for (var j in data.files)
-        gist = gist + marked.parse(data.files[j].content);
-      var dom = '<div class="post">' +
-                '<div class="post-text">' + gist + '</div>' +
-                '<span class="date"><a href="' + data.html_url + '">' + new Date(data.updated_at) + '</a></span>' +
-                ' • <span class="author">Posted by <a href="https://github.com/' + data.user.login + '">' + data.user.login + '</a></span>' +
-                '</div><hr>';
-      $(dom).appendTo('#post' + data.id);
-    }, 'json').done(function() {
-      queue --;
-      if (queue == 0)
-        $('#loader').hide();
-    });
-  }
-}
+// function loadPosts() {
+//   $('#loader').show();
+//   for (;loaded < toBeLoaded; loaded++) {
+//     queue ++;
+//     $.get('https://api.github.com/gists/' + config.posts[loaded], function (data) {
+//       var gist = '';
+//       for (var j in data.files)
+//         gist = gist + marked.parse(data.files[j].content);
+//       var dom = '<div class="post">' +
+//                 '<div class="post-text">' + gist + '</div>' +
+//                 '<span class="date"><a href="' + data.html_url + '">' + new Date(data.updated_at) + '</a></span>' +
+//                 ' • <span class="author">Posted by <a href="https://github.com/' + data.user.login + '">' + data.user.login + '</a></span>' +
+//                 '</div><hr>';
+//       $(dom).appendTo('#post' + data.id);
+//     }, 'json').done(function() {
+//       queue --;
+//       if (queue == 0)
+//         $('#loader').hide();
+//     });
+//   }
+// }
 
 function loadLink(gist_id, parent_id) {
   parent_id = (typeof parent_id === 'undefined') ? gist_id : parent_id;
@@ -58,8 +58,9 @@ function loadLink(gist_id, parent_id) {
       gist = gist + marked.parse(data.files[j].content);
       title = data.files[j].filename;
       updated_at = new Date(data.updated_at);
-    var dom = '<div class="' + postClass + '">' + '<a href="' + data.html_url + '">' + titleizeMarkdown(title) + '</a>' + ' •  <span class="author"></span>' +
-              '<span class="author">' + (updated_at.getMonth()+1) + '.' + (updated_at.getDate()+1) + '.' + updated_at.getFullYear() + '</span>' +
+      timeLength = getTimeLength(updated_at);
+    var dom = '<div class="' + postClass + '" data-time-length="' + timeLength + '">' + '<a href="' + data.html_url + '">' + titleizeMarkdown(title) + '</a>' + ' •  <span class="author"></span>' +
+              '<span class="author">' + (updated_at.getMonth()+1) + '.' + (updated_at.getDate()) + '.' + updated_at.getFullYear() + '</span>' +
               // ' • <span class="author">posted by <a href="https://github.com/' + data.user.login + '">' + data.user.login + '</a></span>' +
               '</div>';
     (parent_id === gist_id) ? $(dom).prependTo('#post' + parent_id) : $(dom).appendTo('#post' + parent_id);
@@ -81,16 +82,6 @@ function loadAllLinks() {
   for (;loaded < toBeLoaded; loaded++) {
     queue ++;
     $.get('https://api.github.com/gists/' + config.posts[loaded], function (data) {
-      // var gist = '';
-      // for (var j in data.files)
-      //   gist = gist + marked.parse(data.files[j].content);
-      //   title = data.files[j].filename;
-      //   updated_at = new Date(data.updated_at);
-      // var dom = '<div class="post">' + title + ' •  ' +
-      //           '<span class="date"><a href="' + data.html_url + '">' + updated_at.toDateString() + '</a></span>' +
-      //           ' • <span class="author">Posted by <a href="https://github.com/' + data.user.login + '">' + data.user.login + '</a></span>' +
-      //           '</div>';
-      // $(dom).appendTo('#post' + data.id);
       gist_id = data.id;
       loadLink(gist_id);
       forks = data.forks;
@@ -110,7 +101,8 @@ function getRepos() {
   for (var p in config.repos) {
     $.get('https://api.github.com/repos/' + config.gitHubUser + '/' + config.repos[p], function (data) {
       pushed_at = new Date(data.pushed_at);
-      var dom = '<div class="repo">' + '<a href="' + data.homepage + '">' + data.name + '</a>' + ' •  <span class="author"></span>' +
+      timeLength = getTimeLength(pushed_at);
+      var dom = '<div class="repo" data-time-length="'+ timeLength + '">' + '<a href="' + data.homepage + '">' + data.name + '</a>' + ' •  <span class="author"></span>' +
               '<span class="author">' + (pushed_at.getMonth()+1) + '.' + (pushed_at.getDate()+1) + '.' + pushed_at.getFullYear() + '</span>' +
               '</div>';
               console.log(dom);
@@ -129,6 +121,21 @@ function loadOlder() {
   loadPosts();
   if (toBeLoaded == config.posts.length)
     $('#old-posts').hide();
+}
+
+function getTimeLength(date){
+  today = new Date(Date.now());
+  thisDate = new Date(date);
+  diff = (today - thisDate)/(24*60*60*1000)
+  if(diff < 7){
+    return "past-week";
+  }
+  else if(diff < 30){
+    return "past-month";
+  }
+  else{
+    return "past-year";
+  }
 }
 
 $('#loader').hide();

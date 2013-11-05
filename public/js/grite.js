@@ -102,7 +102,7 @@ function getRepos() {
     $.get('https://api.github.com/repos/' + config.gitHubUser + '/' + config.repos[p], function (data) {
       pushed_at = new Date(data.pushed_at);
       timeLength = getTimeLength(pushed_at);
-      var dom = '<div class="repo" data-time-length="'+ timeLength + '">' + '<a href="' + data.homepage + '">' + data.name + '</a>' + ' •  <span class="author"></span>' +
+      var dom = '<div class="repo" data-time-length="'+ timeLength + '">' + '<a href="' + data.homepage + '">' + data.description + '</a>' + ' •  <span class="author"></span>' +
               '<span class="author">' + (pushed_at.getMonth()+1) + '.' + (pushed_at.getDate()+1) + '.' + pushed_at.getFullYear() + '</span>' +
               '</div>';
               console.log(dom);

@@ -59,13 +59,20 @@ function loadLink(gist_id, parent_id) {
       title = data.files[j].filename;
       updated_at = new Date(data.updated_at);
       timeLength = getTimeLength(updated_at);
-    var dom = '<div class="' + postClass + '" data-time-length="' + timeLength + '">' + '<a href="' + data.html_url + '">' + titleizeMarkdown(title) + '</a>' + ' •  <span class="author"></span>' +
+    var dom = '<div id="post' + gist_id + '" class="' + postClass + '" data-time-length="' + timeLength + '">' + '<a href="' + data.html_url + '">' + titleizeMarkdown(title) + '</a>' + ' •  <span class="author"></span>' +
               '<span class="author">' + (updated_at.getMonth()+1) + '.' + (updated_at.getDate()) + '.' + updated_at.getFullYear() + '</span>' +
               // ' • <span class="author">posted by <a href="https://github.com/' + data.user.login + '">' + data.user.login + '</a></span>' +
               '</div>';
     (parent_id === gist_id) ? $(dom).prependTo('#post' + parent_id) : $(dom).appendTo('#post' + parent_id);
+    forks = data.forks;
+      for(var i in forks) {
+        thisId = forks[i].id;
+        console.log('fork id ' + forks[i].id)
+        loadLink(thisId, gist_id);
+      }
     // $(dom).appendTo('#posts');
     }, 'json').done(function() {
+
   });
 }
 
@@ -78,20 +85,34 @@ function loadLink(gist_id, parent_id) {
   }
 
 function loadAllLinks() {
-  $('#loader').show();
-  for (;loaded < toBeLoaded; loaded++) {
-    queue ++;
+  // $('#loader').show();
+  // for (;loaded < toBeLoaded; loaded++) {
+  //   queue ++;
+  //   $.get('https://api.github.com/gists/' + config.posts[loaded], function (data) {
+  //     gist_id = data.id;
+  //     loadLink(gist_id);
+  //     forks = data.forks;
+  //     for(var i in forks) {
+  //       thisId = forks[i].id;
+  //       loadLink(thisId, gist_id);
+  //     }
+  //   }, 'json').done(function() {
+  //     queue --;
+  //     if (queue == 0)
+  //       $('#loader').hide();
+  //   });
+  // }
+    $('#loader').show();
+    for (;loaded < config.posts.length; loaded++) {
     $.get('https://api.github.com/gists/' + config.posts[loaded], function (data) {
       gist_id = data.id;
       loadLink(gist_id);
       forks = data.forks;
-      for(var i in forks) {
-        thisId = forks[i].id;
-        loadLink(thisId, gist_id);
-      }
+      // for(var i in forks) {
+      //   thisId = forks[i].id;
+      //   loadLink(thisId, gist_id);
+      // }
     }, 'json').done(function() {
-      queue --;
-      if (queue == 0)
         $('#loader').hide();
     });
   }
@@ -105,7 +126,7 @@ function getRepos() {
       var dom = '<div class="repo" data-time-length="'+ timeLength + '">' + '<a href="' + data.homepage + '">' + data.description + '</a>' + ' •  <span class="author"></span>' +
               '<span class="author">' + (pushed_at.getMonth()+1) + '.' + (pushed_at.getDate()+1) + '.' + pushed_at.getFullYear() + '</span>' +
               '</div>';
-              console.log(dom);
+              // console.log(dom);
       $(dom).appendTo('#repos');
     }, 'json').done(function() {
     });

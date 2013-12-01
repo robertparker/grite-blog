@@ -49,6 +49,26 @@ function createPlaceholders() {
 //   }
 // }
 
+function loadPost() {
+  var gist_id = $('#gist_id').text();
+  $('#gist_id').hide();
+  $.get('https://api.github.com/gists/' + gist_id, function (data) {
+    var gist = '';
+    for (var j in data.files)
+      gist = gist + marked.parse(data.files[j].content);
+      title = data.files[j].filename;
+    var dom = '<div class="post">' +
+              '<div class="post-text">' + gist + '</div>' +
+              // '<span class="date"><a href="' + data.html_url + '">' + new Date(data.updated_at) + '</a></span>' +
+              // ' • <span class="author">Posted by <a href="https://github.com/' + data.user.login + '">' + data.user.login + '</a></span>' +
+              '</div><hr>';
+    $(dom).appendTo('.post');
+  }, 'json').done(function() {
+      $('#loader').hide();
+  });
+}
+
+
 function loadLink(gist_id, parent_id) {
   parent_id = (typeof parent_id === 'undefined') ? gist_id : parent_id;
   $.get('https://api.github.com/gists/' + gist_id, function (data) {
@@ -59,7 +79,7 @@ function loadLink(gist_id, parent_id) {
       title = data.files[j].filename;
       updated_at = new Date(data.updated_at);
       timeLength = getTimeLength(updated_at);
-    var dom = '<div id="post' + gist_id + '" class="' + postClass + '" data-time-length="' + timeLength + '">' + '<a href="' + data.html_url + '">' + titleizeMarkdown(title) + '</a>' + ' •  <span class="author"></span>' +
+    var dom = '<div id="post' + gist_id + '" class="' + postClass + '" data-time-length="' + timeLength + '">' + '<a href="/gist/' + gist_id + '">' + titleizeMarkdown(title) + '</a>' + ' •  <span class="author"></span>' +
               '<span class="author">' + (updated_at.getMonth()+1) + '.' + (updated_at.getDate()) + '.' + updated_at.getFullYear() + '</span>' +
               // ' • <span class="author">posted by <a href="https://github.com/' + data.user.login + '">' + data.user.login + '</a></span>' +
               '</div>';
@@ -159,13 +179,3 @@ function getTimeLength(date){
   }
 }
 
-$('#loader').hide();
-// setTitle();
-setNavbar();
-loadFooter();
-$('#old-posts').bind('click', loadOlder);
-createPlaceholders();
-loadAllLinks();
-getRepos();
-if (toBeLoaded == config.posts.length)
-  $('#old-posts').hide();

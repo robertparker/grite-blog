@@ -1,4 +1,15 @@
 $(document).ready(function() {
+$('#loader').hide();
+// setTitle();
+setNavbar();
+loadFooter();
+$('#old-posts').bind('click', loadOlder);
+createPlaceholders();
+loadAllLinks();
+getRepos();
+if (toBeLoaded == config.posts.length)
+  $('#old-posts').hide();
+
 	
 	$( "#past-week" ).click(function( event ){
 		console.log("I'm here!")
@@ -18,5 +29,6 @@ $(document).ready(function() {
 		$("[data-time-length=past-month]").show("slow")
 		$("[data-time-length=past-year]").show("slow")
 	});
+
 
 });

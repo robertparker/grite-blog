@@ -35,13 +35,14 @@ a:hover {
 }
 
 #title {
-  font-family: "HelveticaNeue-Medium", "Helvetica Neue";
+  font-family: 'Kotta One', serif;
+  font-size: 32px;
 }
 
 #time-length {
   color: #FF3300;/*; add this in when you can separate by time length.*/
   background-color:transparent;
-  font-size:48px;
+  font-size:32px;
   font-family:inherit;
   font-weight:inherit;
   line-height:inherit;

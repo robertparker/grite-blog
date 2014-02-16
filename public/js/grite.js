@@ -57,12 +57,23 @@ function loadPost() {
     for (var j in data.files)
       gist = gist + marked.parse(data.files[j].content);
       title = data.files[j].filename;
+      commit_count = data.history.length;
+      last_commit_date = new Date(data.history[0].committed_at);
+      first_commit_date = new Date(data.history[commit_count -1].committed_at);
+      time_diff = last_commit_date.getTime() - first_commit_date.getTime();
+      console.log(time_diff);
+      month_count = Math.floor(time_diff/(1000*3600*24*30));
+      console.log(month_count)
     var dom = '<div class="post">' +
               '<div class="post-text">' + gist + '</div>' +
               // '<span class="date"><a href="' + data.html_url + '">' + new Date(data.updated_at) + '</a></span>' +
               // ' • <span class="author">Posted by <a href="https://github.com/' + data.user.login + '">' + data.user.login + '</a></span>' +
               '</div><hr>';
     $(dom).appendTo('.post');
+    var footer =  '<p>' +'<a href="http://gist.github.com/' +gist_id +'">' + 
+    commit_count + ' revisions over '+ month_count + ' months. ' + 
+    '</a></p>';
+    $(footer).appendTo('#footer');
   }, 'json').done(function() {
       $('#loader').hide();
   });

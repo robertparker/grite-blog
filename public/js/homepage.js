@@ -7,9 +7,25 @@ $('#old-posts').bind('click', loadOlder);
 createPlaceholders();
 loadAllLinks();
 getRepos();
-if (toBeLoaded == config.posts.length)
+if (toBeLoaded == config.posts.length){
   $('#old-posts').hide();
+}
 
+// $('div[id^="post"]').on({
+$('#allposts').on({
+	mouseenter: function(){
+// $('div.post-content').hover(function(){
+		console.log("entering!!");
+		var parent_id = $(this).attr('data-parent-id');
+		console.log('parent_id is '+ parent_id);
+    $('div[data-parent-id="'+parent_id + '"]').addClass('hover');
+    $('div[data-gist-id="'+parent_id + '"]').addClass('hover-parent');
+  },
+  mouseleave: function(){
+  	$('div[id^="post"]').removeClass('hover');
+  	$('div[id^="post"]').removeClass('hover-parent');
+  }
+}, 'div');
 	
 	$( "#past-week" ).click(function( event ){
 		console.log("I'm here!")

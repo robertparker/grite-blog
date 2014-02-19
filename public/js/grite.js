@@ -20,7 +20,7 @@ function createPlaceholders() {
   for (var i = 0; i < config.atOnce; i++) {
     if (toBeLoaded != config.posts.length) {
       var dom = '<div id="post' + config.posts[toBeLoaded] + '"></div>';
-      $(dom).appendTo('#posts');
+      $(dom).appendTo('#allposts');
       toBeLoaded++;
     } else
       break;
@@ -64,12 +64,12 @@ function loadPost() {
       console.log(time_diff);
       month_count = Math.floor(time_diff/(1000*3600*24*30));
       console.log(month_count)
-    var dom = '<div class="post">' +
-              '<div class="post-text">' + gist + '</div>' +
+    var dom = '<div class="post-text">' +
+              '<div class="post-text-content">' + gist + '</div>' +
               // '<span class="date"><a href="' + data.html_url + '">' + new Date(data.updated_at) + '</a></span>' +
               // ' • <span class="author">Posted by <a href="https://github.com/' + data.user.login + '">' + data.user.login + '</a></span>' +
               '</div><hr>';
-    $(dom).appendTo('.post');
+    $(dom).appendTo('.post-text');
     var footer =  '<p>' +'<a href="http://gist.github.com/' +gist_id +'">' + 
     commit_count + ' revisions over '+ month_count + ' months. ' + 
     '</a></p>';
@@ -84,28 +84,38 @@ function loadLink(gist_id, parent_id) {
   parent_id = (typeof parent_id === 'undefined') ? gist_id : parent_id;
   $.get('https://api.github.com/gists/' + gist_id, function (data) {
     var gist = '';
-    var postClass = (parent_id === gist_id) ? 'post' : 'fork-post'
+    var postClass = (parent_id === gist_id) ? 'post-box' : 'post-box';
     for (var j in data.files)
       gist = gist + marked.parse(data.files[j].content);
       title = data.files[j].filename;
       updated_at = new Date(data.updated_at);
       timeLength = getTimeLength(updated_at);
-    var dom = '<div id="post' + gist_id + '" class="' + postClass + '" data-time-length="' + timeLength + '">' + '<a href="/gist/' + gist_id + '">' + titleizeMarkdown(title) + '</a>' + ' •  <span class="author"></span>' +
-              '<span class="author">' + (updated_at.getMonth()+1) + '.' + (updated_at.getDate()) + '.' + updated_at.getFullYear() + '</span>' +
-              // ' • <span class="author">posted by <a href="https://github.com/' + data.user.login + '">' + data.user.login + '</a></span>' +
-              '</div>';
-    (parent_id === gist_id) ? $(dom).prependTo('#post' + parent_id) : $(dom).appendTo('#post' + parent_id);
+    // var dom = '<div id="post' + gist_id + '" class="' + postClass + '" data-time-length="' + timeLength + '">' + '<a href="/gist/' + gist_id + '">' + titleizeMarkdown(title) + '</a>' + ' •  <span class="author"></span>' +
+    //           '<span class="author">' + (updated_at.getMonth()+1) + '.' + (updated_at.getDate()) + '.' + updated_at.getFullYear() + '</span>' +
+    //           // ' • <span class="author">posted by <a href="https://github.com/' + data.user.login + '">' + data.user.login + '</a></span>' +
+    //           '</div>';
+
+      var dom = '<a href="/gist/' + gist_id + '">' + '<div id="post' + gist_id + '" class="' + postClass + '"' + 'data-time-length="' + timeLength + '"' + ' data-parent-id="' + parent_id + '"' + ' data-gist-id="' + gist_id + '">' + '<div class="post-content"><div><span>' + titleizeMarkdown(title) + ' • ' +
+            (updated_at.getMonth()+1) + '.' + (updated_at.getDate()) + '.' + updated_at.getFullYear() + '</span></div></div></div></a>';
+
+    // (parent_id === gist_id) ? $(dom).prependTo('#post' + parent_id) : $(dom).appendTo('#post' + parent_id);
+    (parent_id === gist_id) ? $(dom).insertBefore('#post' + parent_id) : $(dom).insertAfter('#post' + parent_id);
     forks = data.forks;
       for(var i in forks) {
         thisId = forks[i].id;
         console.log('fork id ' + forks[i].id)
         loadLink(thisId, gist_id);
       }
-    // $(dom).appendTo('#posts');
     }, 'json').done(function() {
 
   });
 }
+
+  
+
+  var highlightPosts = function() {
+    $('.post-box').css({"border": "5px solid green"})
+  }
 
   function titleizeMarkdown(title) {
     return title.replace('.md','').replace(/-/g,' ');
@@ -154,9 +164,8 @@ function getRepos() {
     $.get('https://api.github.com/repos/' + config.gitHubUser + '/' + config.repos[p], function (data) {
       pushed_at = new Date(data.pushed_at);
       timeLength = getTimeLength(pushed_at);
-      var dom = '<div class="repo" data-time-length="'+ timeLength + '">' + '<a href="' + data.homepage + '">' + data.description + '</a>' + ' •  <span class="author"></span>' +
-              '<span class="author">' + (pushed_at.getMonth()+1) + '.' + (pushed_at.getDate()+1) + '.' + pushed_at.getFullYear() + '</span>' +
-              '</div>';
+      var dom = '<div class="post-box"'+ ' data-time-length="' + timeLength + '""><div class="post-content"><div><span>' + '<a href="' + data.homepage + '">' + data.description + '</a>' + ' • ' +
+              (pushed_at.getMonth()+1) + '.' + (pushed_at.getDate()+1) + '.' + pushed_at.getFullYear() + '</span></div></div>';
               // console.log(dom);
       $(dom).appendTo('#repos');
     }, 'json').done(function() {

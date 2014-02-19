@@ -172,8 +172,10 @@ a[role="menuitem"] {
 
 .hover {
   /*background-color: #E238A7;*/
-  background-color: #FF4040;
-  color:white;
+  /*background-color: #FF4040;*/
+  background-color: #FF7373;
+  /*color:white;*/
+  color:#FFFFFE;
   border: 1px solid;
   outline: none;
 }
@@ -182,6 +184,7 @@ a[role="menuitem"] {
   /*background-color: #C50080;*/
   background-color: #FF0000;
   color: white;
+  color:#FFFFFE;
   border: 1px solid;
   outline: none;
 }

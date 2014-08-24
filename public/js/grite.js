@@ -1,5 +1,6 @@
 var queue = 0;
 var toBeLoaded = 0;
+var toBeLoaded2 = 0;
 var loaded = 0;
 
 function setTitle() {
@@ -25,29 +26,88 @@ function createPlaceholders() {
     } else
       break;
   }
+
+  //family-posts
+  for (var i = 0; i < config.atOnce; i++) {
+    if (toBeLoaded2 != config.posts.length) {
+      var dom = '<div id="family-post' + config.posts[toBeLoaded2] + '"></div>';
+      $(dom).appendTo('#familyposts');
+      toBeLoaded2++;
+    } else
+      break;
+  }
+
 }
 
-// function loadPosts() {
-//   $('#loader').show();
-//   for (;loaded < toBeLoaded; loaded++) {
-//     queue ++;
-//     $.get('https://api.github.com/gists/' + config.posts[loaded], function (data) {
-//       var gist = '';
-//       for (var j in data.files)
-//         gist = gist + marked.parse(data.files[j].content);
-//       var dom = '<div class="post">' +
-//                 '<div class="post-text">' + gist + '</div>' +
-//                 '<span class="date"><a href="' + data.html_url + '">' + new Date(data.updated_at) + '</a></span>' +
-//                 ' • <span class="author">Posted by <a href="https://github.com/' + data.user.login + '">' + data.user.login + '</a></span>' +
-//                 '</div><hr>';
-//       $(dom).appendTo('#post' + data.id);
-//     }, 'json').done(function() {
-//       queue --;
-//       if (queue == 0)
-//         $('#loader').hide();
-//     });
-//   }
-// }
+function arrangeLinkFamily(parent_id){
+  div_array = generateFamilyLinks(parent_id);
+  console.log('div_array is ' + div_array)
+  for(var dom in div_array){
+    console.log('for loop : dom is ' + dom);
+    $(dom).appendTo('#family-post' + parent_id);
+  }
+}
+
+function generateFamilyDiv(gist_id, parent_id, postClass, timeLength, title){
+  var dom = $('<a href="/gist/' + gist_id + '">' + '<div id="post' + gist_id + '" class="' + postClass + '"' + 'data-time-length="' + timeLength + '"' + ' data-parent-id="' + parent_id + '"' + ' data-gist-id="' + gist_id + '">' + '<div class="family-post-content"><div><span>' + titleizeMarkdown(title) + ' • ' +
+    (updated_at.getMonth()+1) + '.' + (updated_at.getDate()) + '.' + updated_at.getFullYear() + '</span></div></div></div></a>');
+  return dom      
+}
+
+//returns array of link divs
+function generateFamilyLinks(parent_id){
+  final_array = (typeof final_array == 'undefined' ? [] : final_array);
+  children_array = (typeof children_array == 'undefined' ? [] : children_array);
+  original_parent_id = (typeof original_parent_id == 'undefined' ? parent_id : original_parent_id);
+  $.get('https://api.github.com/gists/' + parent_id, function (data) {
+    var gist = '';
+    gist_id = data.id;
+    var postClass = 'family-post-box';
+    for (var j in data.files){
+      console.log('gist_id is '+ gist_id );
+      gist = gist + marked.parse(data.files[j].content);
+      title = data.files[j].filename;
+      updated_at = new Date(data.updated_at);
+      timeLength = getTimeLength(updated_at);
+      dom = generateFamilyDiv(gist_id, parent_id, postClass, timeLength, title);
+      // var dom = '<a href="/gist/' + gist_id + '">' + '<div id="post' + gist_id + '" class="' + postClass + '"' + 'data-time-length="' + timeLength + '"' + ' data-parent-id="' + parent_id + '"' + ' data-gist-id="' + gist_id + '">' + '<div class="family-post-content"><div><span>' + titleizeMarkdown(title) + ' • ' +
+      //       (updated_at.getMonth()+1) + '.' + (updated_at.getDate()) + '.' + updated_at.getFullYear() + '</span></div></div></div></a><br />';
+      console.log('dom type is ' + typeof(dom) );
+      (parent_id === gist_id) ? final_array.push(dom) : final_array.unshift(dom);
+      // (gist_id == original_parent_id) ? : children_array.push(gist_id);
+      console.log('final_array is ' + final_array);
+      forks = data.forks;
+      for(var i in forks) {
+        thisId = forks[i].id;
+        console.log('fork id ' + forks[i].id);
+        generateFamilyLinks(thisId);
+      }
+    }
+    }, 'json').done(function() {
+          // return final_array;
+            for(var i in final_array){
+                console.log('for loop : div is is ' + $(final_array[i]));
+                console.log('for loop : data-gist-id is ' + $(final_array[i]).children('div').attr('data-gist-id') );
+              if( $(final_array[i]).children('div').attr('data-gist-id') == original_parent_id){
+                $(final_array[i]).appendTo('#family-post6955115');
+                $('#allposts').find('div[data-gist-id="'+ $(final_array[i]).children('div').attr('data-gist-id') + '"]').hide();
+              }
+              // else{
+                // console.log('lets add children');
+                // $('a[href="#' + original_parent_id + '"]').show()
+                // $('a[href="#' + original_parent_id + '"]').children('a').show('slow');
+                // $('a[href="#' + $(final_array[i]).children('div').attr('data-gist-id') + '"]').show('slow');
+                // $(final_array[i]).appendTo('#family-post6955115');
+                // $(final_array[i]).children('div').addClass('family-post-child')
+                // $(final_array[i]).appendTo('#family-post6955115');
+                // $(final_array[i]).addClass('family-post-child')
+              // }
+                
+            }
+  });
+
+}
+
 
 function loadPost() {
   var gist_id = $('#gist_id').text();
@@ -70,10 +130,13 @@ function loadPost() {
               // ' • <span class="author">Posted by <a href="https://github.com/' + data.user.login + '">' + data.user.login + '</a></span>' +
               '</div><hr>';
     $(dom).appendTo('.post-text');
-    var footer =  '<p>' +'<a href="http://gist.github.com/' +gist_id +'">' + 
+    
+    var footer = '<p>' +'<a href="http://gist.github.com/' +gist_id +'">' + 
     commit_count + ' revisions over '+ month_count + ' months. ' + 
     '</a></p>';
     $(footer).appendTo('#footer');
+    $('<br /><a href="/" style="float:none;">back</a>').appendTo('#footer');
+
   }, 'json').done(function() {
       $('#loader').hide();
   });
@@ -95,7 +158,7 @@ function loadLink(gist_id, parent_id) {
     //           // ' • <span class="author">posted by <a href="https://github.com/' + data.user.login + '">' + data.user.login + '</a></span>' +
     //           '</div>';
 
-      var dom = '<a href="/gist/' + gist_id + '">' + '<div id="post' + gist_id + '" class="' + postClass + '"' + 'data-time-length="' + timeLength + '"' + ' data-parent-id="' + parent_id + '"' + ' data-gist-id="' + gist_id + '">' + '<div class="post-content"><div><span>' + titleizeMarkdown(title) + ' • ' +
+      var dom = '<a href="#' + gist_id + '">' + '<div id="post' + gist_id + '" class="' + postClass + '"' + 'data-time-length="' + timeLength + '"' + ' data-parent-id="' + parent_id + '"' + ' data-gist-id="' + gist_id + '">' + '<div class="post-content"><div><span>' + titleizeMarkdown(title) + ' • ' +
             (updated_at.getMonth()+1) + '.' + (updated_at.getDate()) + '.' + updated_at.getFullYear() + '</span></div></div></div></a>';
 
     // (parent_id === gist_id) ? $(dom).prependTo('#post' + parent_id) : $(dom).appendTo('#post' + parent_id);
@@ -110,8 +173,6 @@ function loadLink(gist_id, parent_id) {
 
   });
 }
-
-  
 
   var highlightPosts = function() {
     $('.post-box').css({"border": "5px solid green"})

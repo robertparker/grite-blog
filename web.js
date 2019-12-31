@@ -1,7 +1,9 @@
 var express = require('express');
 var jade = require('jade');
+var logger = require('morgan')
 
-var app = express.createServer(express.logger());
+// var app = express.createServer(express.logger());
+var app = express()
 app.engine('html', require('ejs').renderFile);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
@@ -10,7 +12,7 @@ var fs = require('fs');
 var buf = fs.readFileSync('index.html');
 var finalString = buf.toString('utf-8',0,buf.length-1);
 
-app.use(app.router);
+app.use(logger('combined'))
 app.use('/public', express.static(__dirname + '/public'));
 
 app.get('/', function(request, response) {

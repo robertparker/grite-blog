@@ -15,8 +15,8 @@ $(document).ready(function() {
     })
     .done(function() {
       console.log(gistPosts);
-      createPlaceholders2(gistPosts);
-      loadAllLinks2(gistPosts);
+      createPlaceholders(gistPosts);
+      loadAllLinks(gistPosts);
     });
 
   $("#allposts").on(
@@ -31,17 +31,27 @@ $(document).ready(function() {
         $('div[id^="post"]').removeClass("hover-parent");
       },
       mouseup: function(event) {
-        $("#title").html('<a href="/" id="back">back</a>');
         var parent_id = $(this)
           .closest("div")
           .attr("data-parent-id");
-        console.log("parent id is " + parent_id);
-        if (parent_id) {
-          $(".post-box")
-            .not('div[data-parent-id="' + parent_id + '"]')
-            .hide("slow");
-          console.log("that parent_id was " + parent_id);
-          arrangeLinkFamily(parent_id);
+        // console.log("parent id is " + parent_id);
+
+        var gist_id = $(this)
+          .closest("div")
+          .attr("data-gist-id")
+
+        if($('div[data-parent-id="' + parent_id + '"]').length == 1){
+          window.open("/gist/" + gist_id, "_self");
+        }
+        else {
+          if (parent_id) {
+            $(".post-box")
+              .not('div[data-parent-id="' + parent_id + '"]')
+              .hide("slow");
+            // console.log("that parent_id was " + parent_id);
+            $("#title").html('<a href="/" id="back">back</a>');
+            arrangeLinkFamily(parent_id);
+          }
         }
       }
     },
@@ -54,7 +64,6 @@ $(document).ready(function() {
       .find("a")
       .each(function foo(index, item) {
         console.log("ROHIT ______________" + $(item).attr("href"));
-        // if(window.location.hash[0] == '#' && $(item).attr('href')[0] == "#"){
         if ($("#title").text() == "back") {
           $(item).attr(
             "href",

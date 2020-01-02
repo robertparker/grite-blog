@@ -30,36 +30,7 @@ function setNavbar() {
   }
 }
 
-function createPlaceholders() {
-  var gistPosts = [];
-  getAllGistsJSON()
-    .then(function(returndata) {
-      for (var i in returndata) {
-        gist = returndata[i];
-        console.log("gist id is " + gist.id);
-        gistPosts.push(gist.id);
-      }
-    })
-    .done(function() {
-      for (var i = 0; i < config.atOnce; i++) {
-        if (toBeLoaded != gistPosts.length) {
-          var dom = '<div id="post' + gistPosts[toBeLoaded] + '"></div>';
-          $(dom).appendTo("#allposts");
-          toBeLoaded++;
-        } else break;
-      }
-      for (var i = 0; i < config.atOnce; i++) {
-        if (toBeLoaded2 != gistPosts.length) {
-          var dom =
-            '<div id="family-post' + gistPosts[toBeLoaded2] + '"></div>';
-          $(dom).appendTo("#familyposts");
-          toBeLoaded2++;
-        } else break;
-      }
-    });
-}
-
-function createPlaceholders2(gistPosts) {
+function createPlaceholders(gistPosts) {
   console.log("gistPosts.length:" + gistPosts.length);
   for (var i = 0; i < config.atOnce; i++) {
     if (toBeLoaded != gistPosts.length) {
@@ -314,23 +285,7 @@ function toTitleCase(str) {
   });
 }
 
-function loadAllLinks() {
-  $("#loader").show();
-  for (; loaded < gistPosts.length; loaded++) {
-    $.get(
-      "https://api.github.com/gists/" + gistPosts[loaded],
-      function(data) {
-        gist_id = data.id;
-        loadLink(gist_id);
-      },
-      "json"
-    ).done(function() {
-      $("#loader").hide();
-    });
-  }
-}
-
-function loadAllLinks2(gistPosts) {
+function loadAllLinks(gistPosts) {
   $("#loader").show();
   for (; loaded < gistPosts.length; loaded++) {
     $.get(

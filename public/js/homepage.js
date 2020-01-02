@@ -3,13 +3,26 @@ $('#loader').hide();
 // setTitle();
 setNavbar();
 loadFooter();
-$('#old-posts').bind('click', loadOlder);
-createPlaceholders();
-loadAllLinks();
-// getRepos();
-if (toBeLoaded == config.posts.length){
-  $('#old-posts').hide();
+// $('#old-posts').bind('click', loadOlder);
+var gistPosts = [];
+getAllGistsJSON().then(function(returndata) {
+for (var i in returndata) {
+  gist = returndata[i]
+	if(gistPosts.indexOf(gist.id) == -1){
+	  gistPosts.push(gist.id)
+	}
 }
+}).done(function(){
+	console.log(gistPosts)
+	createPlaceholders2(gistPosts);
+	loadAllLinks2(gistPosts)
+});
+// createPlaceholders();
+// loadAllLinks();
+// getRepos();
+// if (toBeLoaded == gistPosts.length){
+//   $('#old-posts').hide();
+// }
 
 
  // $('div').click(function(){

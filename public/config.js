@@ -1,3 +1,4 @@
+// var gists = getAllGists();
 var config = {
   title: "Here are some things I've been doing lately.",
   navbar: [  ],
@@ -7,8 +8,9 @@ var config = {
            '6886499', //Mumbai 10.17.2013
            '6955115', //In Search of Socialized Medicine
            '6955146', //Sports Journalism Enters Puberty
-           '6955219' //My Most Important Friend Request
+           '6955219', //My Most Important Friend Request
            ],
+  // posts: gists,
   atOnce: 100,
   footerText: '',
   gitHubUser: 'robertparker',

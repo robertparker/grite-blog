@@ -3,6 +3,43 @@ var toBeLoaded = 0;
 var toBeLoaded2 = 0;
 var loaded = 0;
 
+
+function getAllGistsJSON() {
+  return $.getJSON('https://api.github.com/users/robertparker/gists', function (data) {
+    return data;
+  });
+}
+
+// var gistPosts = [];
+// getAllGistsJSON().then(function(returndata) {
+//   for (var i in returndata) {
+//     gist = returndata[i]
+//     console.log('gist id is ' + gist.id)
+//     if(!gistPosts.indexOf(gist.id)){
+//       gistPosts.push(gist.id)
+//     }
+//   }
+// });
+
+// ORIGINAL:
+// function getAllGists() {
+//   var gists = new Array();
+//   $.getJSON('https://api.github.com/users/robertparker/gists', function (data) {
+//     for (var i in data) {
+//       gist = data[i]
+//       console.log('gist id is ' + gist.id)
+//       gists.push(gist.id)
+//     }
+//   }).done(function() {
+//   });
+//   return gists;
+// }
+
+// var gistPosts = getAllGists();
+// console.log(getAllGists())
+// console.log(gistPosts)
+// console.log(typeof gistPosts);
+// console.log(gistPosts.length);
 function setTitle() {
   $('#title').html(config.title);
   document.title = config.title;
@@ -18,26 +55,84 @@ function setNavbar() {
 }
 
 function createPlaceholders() {
+  var gistPosts = [];
+  getAllGistsJSON().then(function(returndata) {
+    for (var i in returndata) {
+      gist = returndata[i]
+      console.log('gist id is ' + gist.id)
+      gistPosts.push(gist.id)
+    }
+    }).done(function(){
+        for (var i = 0; i < config.atOnce; i++) {
+          if (toBeLoaded != gistPosts.length) {
+            var dom = '<div id="post' + gistPosts[toBeLoaded] + '"></div>';
+            $(dom).appendTo('#allposts');
+            toBeLoaded++;
+          } else
+            break;
+        }
+        for (var i = 0; i < config.atOnce; i++) {
+          if (toBeLoaded2 != gistPosts.length) {
+            var dom = '<div id="family-post' + gistPosts[toBeLoaded2] + '"></div>';
+            $(dom).appendTo('#familyposts');
+            toBeLoaded2++;
+          } else
+            break;
+        }
+    });
+}
+
+function createPlaceholders2(gistPosts) {
+  console.log('gistPosts.length:' + gistPosts.length)
   for (var i = 0; i < config.atOnce; i++) {
-    if (toBeLoaded != config.posts.length) {
-      var dom = '<div id="post' + config.posts[toBeLoaded] + '"></div>';
-      $(dom).appendTo('#allposts');
+    if (toBeLoaded != gistPosts.length) {
+      console.log('toBeLoaded: ' +toBeLoaded)
+      gist_id = gistPosts[toBeLoaded]
+      if(!$('#post' + gist_id)[0]){
+        var dom = '<div id="post' + gist_id + '"></div>';
+        $(dom).appendTo('#allposts');
+      }
       toBeLoaded++;
     } else
       break;
   }
-
-  //family-posts
   for (var i = 0; i < config.atOnce; i++) {
-    if (toBeLoaded2 != config.posts.length) {
-      var dom = '<div id="family-post' + config.posts[toBeLoaded2] + '"></div>';
-      $(dom).appendTo('#familyposts');
+    if (toBeLoaded2 != gistPosts.length) {
+      gist_id = gistPosts[toBeLoaded2]
+      if(!$('#family-post' + gist_id)[0]){
+        var dom = '<div id="family-post' + gist_id + '"></div>';
+        $(dom).appendTo('#familyposts');
+      }
       toBeLoaded2++;
     } else
       break;
   }
-
 }
+
+
+// ORIGINAL:
+// function createPlaceholders() {
+//   console.log('posts are + ' + gistPosts + 'length: ' + gistPosts.length);
+//   for (var i = 0; i < config.atOnce; i++) {
+//     if (toBeLoaded != gistPosts.length) {
+//       var dom = '<div id="post' + gistPosts[toBeLoaded] + '"></div>';
+//       $(dom).appendTo('#allposts');
+//       toBeLoaded++;
+//     } else
+//       break;
+//   }
+
+  //family-posts
+//   for (var i = 0; i < config.atOnce; i++) {
+//     if (toBeLoaded2 != gistPosts.length) {
+//       var dom = '<div id="family-post' + gistPosts[toBeLoaded2] + '"></div>';
+//       $(dom).appendTo('#familyposts');
+//       toBeLoaded2++;
+//     } else
+//       break;
+//   }
+
+// }
 
 function arrangeLinkFamily(parent_id){
   div_array = generateFamilyLinks(parent_id);
@@ -144,13 +239,15 @@ function loadPost() {
 
 
 function loadLink(gist_id, parent_id) {
-  parent_id = (typeof parent_id === 'undefined') ? gist_id : parent_id;
   $.get('https://api.github.com/gists/' + gist_id, function (data) {
+    console.log('gist_id: ' + gist_id, 'parent_id:' + parent_id)
+    parent_id = (typeof(data.fork_of) === 'undefined') ? gist_id : data.fork_of.id;
     var gist = '';
     var postClass = (parent_id === gist_id) ? 'post-box' : 'post-box';
     for (var j in data.files)
       gist = gist + marked.parse(data.files[j].content);
       title = data.files[j].filename;
+      language = data.files[j].language
       updated_at = new Date(data.updated_at);
       timeLength = getTimeLength(updated_at);
     // var dom = '<div id="post' + gist_id + '" class="' + postClass + '" data-time-length="' + timeLength + '">' + '<a href="/gist/' + gist_id + '">' + titleizeMarkdown(title) + '</a>' + ' •  <span class="author"></span>' +
@@ -162,11 +259,14 @@ function loadLink(gist_id, parent_id) {
             (updated_at.getMonth()+1) + '.' + (updated_at.getDate()) + '.' + updated_at.getFullYear() + '</span></div></div></div></a>';
 
     // (parent_id === gist_id) ? $(dom).prependTo('#post' + parent_id) : $(dom).appendTo('#post' + parent_id);
-    (parent_id === gist_id) ? $(dom).insertBefore('#post' + parent_id) : $(dom).insertAfter('#post' + parent_id);
+    if(document.querySelectorAll("a[href^='#" + gist_id + "']").length == 0){
+      if(language == 'Markdown')
+        (parent_id === gist_id) ? $(dom).insertBefore('#post' + parent_id) : $(dom).insertAfter('#post' + parent_id);
+    }
     forks = data.forks;
       for(var i in forks) {
         thisId = forks[i].id;
-        console.log('fork id ' + forks[i].id)
+        // console.log('fork id ' + forks[i].id + ', parent id ' + gist_id);
         loadLink(thisId, gist_id);
       }
     }, 'json').done(function() {
@@ -187,26 +287,9 @@ function loadLink(gist_id, parent_id) {
   }
 
 function loadAllLinks() {
-  // $('#loader').show();
-  // for (;loaded < toBeLoaded; loaded++) {
-  //   queue ++;
-  //   $.get('https://api.github.com/gists/' + config.posts[loaded], function (data) {
-  //     gist_id = data.id;
-  //     loadLink(gist_id);
-  //     forks = data.forks;
-  //     for(var i in forks) {
-  //       thisId = forks[i].id;
-  //       loadLink(thisId, gist_id);
-  //     }
-  //   }, 'json').done(function() {
-  //     queue --;
-  //     if (queue == 0)
-  //       $('#loader').hide();
-  //   });
-  // }
     $('#loader').show();
-    for (;loaded < config.posts.length; loaded++) {
-    $.get('https://api.github.com/gists/' + config.posts[loaded], function (data) {
+    for (;loaded < gistPosts.length; loaded++) {
+    $.get('https://api.github.com/gists/' + gistPosts[loaded], function (data) {
       gist_id = data.id;
       loadLink(gist_id);
       forks = data.forks;
@@ -219,6 +302,19 @@ function loadAllLinks() {
     });
   }
 }
+
+function loadAllLinks2(gistPosts) {
+    $('#loader').show();
+    for (;loaded < gistPosts.length; loaded++) {
+    $.get('https://api.github.com/gists/' + gistPosts[loaded], function (data) {
+      gist_id = data.id;
+      loadLink(gist_id);
+    }, 'json').done(function() {
+        $('#loader').hide();
+    });
+  }
+}
+
 
 function getRepos() {
   for (var p in config.repos) {
@@ -238,12 +334,12 @@ function loadFooter() {
   $('#footer-text').html(config.footerText);
 }
 
-function loadOlder() {
-  createPlaceholders();
-  loadPosts();
-  if (toBeLoaded == config.posts.length)
-    $('#old-posts').hide();
-}
+// function loadOlder() {
+  // createPlaceholders();
+  // loadPosts();
+  // if (toBeLoaded == gistPosts.length)
+    // $('#old-posts').hide();
+// }
 
 function getTimeLength(date){
   today = new Date(Date.now());

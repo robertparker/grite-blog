@@ -38,6 +38,11 @@ code {
   white-space: pre-wrap;
 }
 
+details {
+  color:#404040; 
+  margin-left: 40px;
+}
+
 .container {
   width: 80%;
   padding-top: 20px;

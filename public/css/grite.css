@@ -43,6 +43,10 @@ details {
   margin-left: 40px;
 }
 
+summary {
+  font-style: italic;
+}
+
 .container {
   width: 80%;
   padding-top: 20px;
